@@ -1,7 +1,7 @@
 # led-crystal
 A simple rgb led (Keyes KY-009 SMD LED) driven by an arduino and shining through a large selenite crystal.
 
-![](https://media.giphy.com/media/uUl8mHGrOqaNPi9oYX/200w_d.gif)
+![](https://media.giphy.com/media/5QIfy0ZyzEZPSFAKoh/giphy.gif)
 
 FastLED Library:
 - https://github.com/FastLED/FastLED
