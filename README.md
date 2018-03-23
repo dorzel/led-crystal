@@ -1,6 +1,8 @@
 # led-crystal
 A simple rgb led (Keyes KY-009 SMD LED) driven by an arduino and shining through a large selenite crystal.
 
+![](https://media.giphy.com/media/uUl8mHGrOqaNPi9oYX/200w_d.gif)
+
 FastLED Library:
 - https://github.com/FastLED/FastLED
 - http://fastled.io/docs/3.1/index.html
@@ -21,6 +23,3 @@ It displays a quick startup sequence which flashes red and then changes to a slo
 using the "rainbow" variant of this function means that the output color will more closely match colors that we
 perceive as part of the rainbow, even though they are less technically correct. More info [here.](https://github.com/FastLED/FastLED/blob/master/hsv2rgb.cpp#L8)
 This was chosen because the original rgb-only implementation showed way too much blue and purple, and not enough reds. With the hsv space this problem is solved. 
-
-
-TODO: upload video of the crystal
