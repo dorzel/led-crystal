@@ -9,3 +9,5 @@ http://fastled.io/docs/3.1/index.html
 understanding HSV as a spherical coordinate system is very beneficial:
 
 https://en.wikipedia.org/wiki/HSL_and_HSV
+
+TODO: upload video of the crystal
