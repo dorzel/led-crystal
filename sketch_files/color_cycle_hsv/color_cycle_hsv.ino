@@ -25,6 +25,7 @@ void loop() {
   // representation of one HSV pixel
   CHSV hsvColor = CHSV(0, 0, 255);
 
+  // TODO: vary hsvcColor.v with the analog microphone
   // run the hsv pixel through hue 0-255, with constant "value" (pretty much brightness)
   for (int i = 0; i < 255; i++) {
     hsvColor.s = sin8_C(i);
