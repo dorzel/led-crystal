@@ -3,12 +3,36 @@
 const int redPin = 10;
 const int greenPin = 11;
 const int bluePin = 9;
+const int encoderPinA = 6;
+const int encoderPinB = 7;
 const int delayMS = 125;
 
 // representation of one RGB pixel
 CRGB rgbColor;
 // representation of one HSV pixel
 CHSV hsvColor = CHSV(0, 255, 255);
+
+int encoderState;
+int encoderLastState;
+int encoderCounter = 0;
+
+
+int getEncoderPosition() {
+  encoderState = digitalRead(encoderPinA);
+  // If the previous and the current state of the exncoderPinA are different, that means a Pulse has occured
+  if (encoderState != encoderLastState){     
+    // If the encoderPinB state is different to the encoderPinA state, that means the encoder is rotating clockwise
+    if (digitalRead(encoderPinB) != encoderState) { 
+      encoderCounter ++;
+    } else {
+      encoderCounter --;
+    }
+    Serial.print("Position: ");
+    Serial.println(encoderCounter);
+  } 
+  encoderLastState = encoderState; // Updates the previous state of the encoderPinA with the current state
+}
+
 
 void setColorRgb(unsigned int red, unsigned int green, unsigned int blue) {
   analogWrite(redPin, red);
@@ -40,6 +64,7 @@ void fullHueCycle() {
     hsvColor.h = i;
     hsv2rgb_rainbow(hsvColor, rgbColor);
     setColorRgb(rgbColor.r, rgbColor.b, rgbColor.g);
+    getEncoderPosition();
     delay(delayMS);
   }
 }
@@ -55,11 +80,17 @@ void startupSequence(int startHue, int numTimes) {
 }
 
 void setup() {
+  pinMode(encoderPinA, INPUT);
+  pinMode(encoderPinB, INPUT);
+  Serial.begin(9600);
+  encoderLastState = digitalRead(encoderPinA);
   // Start off with the LED off.
   setColorRgb(0,0,0);
   startupSequence(0, 5);
 }
 
 void loop() {
-  fullHueCycle();
+  //fullHueCycle();
+  getEncoderPosition();
+  delay(125);
 }
