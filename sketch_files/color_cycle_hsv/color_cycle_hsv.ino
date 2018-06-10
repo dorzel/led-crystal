@@ -3,7 +3,6 @@
 const int redPin = 10;
 const int greenPin = 11;
 const int bluePin = 9;
-const int delayMS = 125;
 
 // representation of one RGB pixel
 CRGB rgbColor;
@@ -16,7 +15,7 @@ void setColorRgb(unsigned int red, unsigned int green, unsigned int blue) {
   analogWrite(bluePin, blue);
 }
 
-void fullValueCycle(bool invert) {
+void fullValueCycle(bool invert, int delayMS) {
   // run the hsv pixel through value 0-255, with constant hue and saturation
   // can choose to invert the direction to 255-0
   for (int i = 0; i <= 255; i += 1) {
@@ -28,11 +27,11 @@ void fullValueCycle(bool invert) {
       }
       hsv2rgb_rainbow(hsvColor, rgbColor);
       setColorRgb(rgbColor.r, rgbColor.b, rgbColor.g);
-      delay(5);
+      delay(delayMS);
     }
 }
 
-void fullHueCycle() {
+void fullHueCycle(int delayMS) {
   // run the hsv pixel through hue 0-255, with constant value and saturation
   // no need to have an invert option as hue is defined as the angular component
   // in cylindrical coordinates, and so will return to it's originial value
@@ -44,22 +43,22 @@ void fullHueCycle() {
   }
 }
 
-void startupSequence(int startHue, int numTimes) {
+void startupSequence(int startHue, int numTimes, int valueDelayMS) {
   // pulsing effect with a single hue, make sure that this runs
   // an odd number of times to end on the value being max
   hsvColor.h = startHue;
   for (int i = 0; i < numTimes; i++) {
     bool invert = (i + 2) % 2;
-    fullValueCycle(invert); 
+    fullValueCycle(invert, valueDelayMS); 
   }
 }
 
 void setup() {
   // Start off with the LED off.
   setColorRgb(0,0,0);
-  startupSequence(0, 5);
+  startupSequence(0, 5, 4);
 }
 
 void loop() {
-  fullHueCycle();
+  fullHueCycle(125);
 }
