@@ -1,10 +1,10 @@
 #include "FastLED.h"
+#include "Thread.h"
 
-const int redPin = 10;
-const int greenPin = 11;
-const int bluePin = 9;
-const int encoderPinA = 6;
-const int encoderPinB = 7;
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+const int buttonPin = 2;
 const int delayMS = 125;
 
 // representation of one RGB pixel
@@ -12,32 +12,32 @@ CRGB rgbColor;
 // representation of one HSV pixel
 CHSV hsvColor = CHSV(0, 255, 255);
 
-int encoderState;
-int encoderLastState;
-int encoderCounter = 0;
+Thread buttonThread = Thread();
 
-
-int getEncoderPosition() {
-  encoderState = digitalRead(encoderPinA);
-  // If the previous and the current state of the exncoderPinA are different, that means a Pulse has occured
-  if (encoderState != encoderLastState){     
-    // If the encoderPinB state is different to the encoderPinA state, that means the encoder is rotating clockwise
-    if (digitalRead(encoderPinB) != encoderState) { 
-      encoderCounter ++;
-    } else {
-      encoderCounter --;
-    }
-    Serial.print("Position: ");
-    Serial.println(encoderCounter);
-  } 
-  encoderLastState = encoderState; // Updates the previous state of the encoderPinA with the current state
-}
+int buttonState = 0;
+int prevButtonState = 0;
+bool lightOn = true;
 
 
 void setColorRgb(unsigned int red, unsigned int green, unsigned int blue) {
   analogWrite(redPin, red);
   analogWrite(greenPin, green);
   analogWrite(bluePin, blue);
+}
+
+void readButton() {
+  buttonState = digitalRead(buttonPin);
+  if (buttonState != prevButtonState) {
+    // button was pressed or released
+    if (buttonState == 1 && prevButtonState == 0) {
+      // invert the lightOn bool every time the button is pressed, not depressed
+      lightOn = !lightOn;
+      if (!lightOn) {
+        setColorRgb(0, 0, 0);
+      }
+    }
+  }
+  prevButtonState = buttonState;
 }
 
 void fullValueCycle(bool invert) {
@@ -60,13 +60,18 @@ void fullHueCycle() {
   // run the hsv pixel through hue 0-255, with constant value and saturation
   // no need to have an invert option as hue is defined as the angular component
   // in cylindrical coordinates, and so will return to it's originial value
+  
   for (int i = 0; i <= 255; i++) {
-    hsvColor.h = i;
-    hsv2rgb_rainbow(hsvColor, rgbColor);
-    setColorRgb(rgbColor.r, rgbColor.b, rgbColor.g);
-    getEncoderPosition();
-    delay(delayMS);
-  }
+    if (lightOn) {
+      hsvColor.h = i;
+      hsv2rgb_rainbow(hsvColor, rgbColor);
+      setColorRgb(rgbColor.r, rgbColor.b, rgbColor.g);
+    }
+    if(buttonThread.shouldRun()){
+      buttonThread.run();
+    }
+    delay(delayMS); 
+  } 
 }
 
 void startupSequence(int startHue, int numTimes) {
@@ -80,17 +85,13 @@ void startupSequence(int startHue, int numTimes) {
 }
 
 void setup() {
-  pinMode(encoderPinA, INPUT);
-  pinMode(encoderPinB, INPUT);
-  Serial.begin(9600);
-  encoderLastState = digitalRead(encoderPinA);
-  // Start off with the LED off.
+  pinMode(buttonPin, INPUT);
+  buttonThread.setInterval(100);
+  buttonThread.onRun(readButton);
   setColorRgb(0,0,0);
   startupSequence(0, 5);
 }
 
 void loop() {
-  //fullHueCycle();
-  getEncoderPosition();
-  delay(125);
+  fullHueCycle();
 }
