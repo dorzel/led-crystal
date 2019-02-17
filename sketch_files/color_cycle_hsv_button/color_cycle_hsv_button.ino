@@ -1,9 +1,9 @@
 #include "FastLED.h"
 #include "Thread.h"
 
-const int redPin = 9;
-const int greenPin = 10;
-const int bluePin = 11;
+const int redPin = 10;
+const int greenPin = 11;
+const int bluePin = 9;
 const int buttonPin = 2;
 const int delayMS = 125;
 
