@@ -1,13 +1,14 @@
 # led-crystal
-A simple rgb led (Keyes KY-009 SMD LED) driven by an arduino and shining through a large selenite crystal.
-
-![](https://media.giphy.com/media/5QIfy0ZyzEZPSFAKoh/giphy.gif)
+A simple RGB LED (Keyes KY-009 5050 SMD LED) driven by an Arduino Uno and shining through a large selenite crystal.
 
 FastLED Library:
+- http://fastled.io/
 - https://github.com/FastLED/FastLED
-- http://fastled.io/docs/3.1/index.html
 
-understanding HSV as a spherical coordinate system is very beneficial:
+LED:
+https://arduinomodules.info/ky-009-rgb-full-color-led-smd-module/
+
+Understanding HSV as a spherical coordinate system is very beneficial:
 - https://en.wikipedia.org/wiki/HSL_and_HSV#Basic_principle
 
 ### The Code
