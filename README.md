@@ -6,7 +6,7 @@ FastLED Library:
 - https://github.com/FastLED/FastLED
 
 LED:
-https://arduinomodules.info/ky-009-rgb-full-color-led-smd-module/
+- https://arduinomodules.info/ky-009-rgb-full-color-led-smd-module/
 
 Understanding HSV as a spherical coordinate system is very beneficial:
 - https://en.wikipedia.org/wiki/HSL_and_HSV#Basic_principle
@@ -18,9 +18,5 @@ basic sketch: `color_cycle_hsv.ino`. The others are WIP sketches attempting to a
 sensors to further control the LED. 
 
 `color_cycle_hsv.ino` uses the hsv color space to cycle the single LED through it's full hue.
-It displays a quick startup sequence which flashes red and then changes to a slow hue cycle (or color cycle). 
 
-`hsv2rgb_rainbow()` is the magic function from the FastLED library that converts the hsv space into rgb space. 
-using the "rainbow" variant of this function means that the output color will more closely match colors that we
-perceive as part of the rainbow, even though they are less technically correct. More info [here.](https://github.com/FastLED/FastLED/blob/master/hsv2rgb.cpp#L8)
-This was chosen because the original rgb-only implementation showed way too much blue and purple, and not enough reds. With the hsv space this problem is solved. 
+`color_cycle_hsv_button.ino` adds functionality with a connected button. Hold the button down for ~1 second to turn on/off. Click it fast to hold/unhold on a certain color. 
