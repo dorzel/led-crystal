@@ -8,7 +8,7 @@ FastLED Library:
 LED:
 - https://arduinomodules.info/ky-009-rgb-full-color-led-smd-module/
 
-Understanding HSV as a spherical coordinate system is very beneficial:
+Understanding the HSV color space as a cylindrical coordinate system is very beneficial:
 - https://en.wikipedia.org/wiki/HSL_and_HSV#Basic_principle
 
 ### The Code
