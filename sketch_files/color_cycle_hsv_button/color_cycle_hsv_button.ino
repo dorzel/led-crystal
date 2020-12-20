@@ -5,7 +5,7 @@ const int redPin = 10;
 const int greenPin = 11;
 const int bluePin = 9;
 const int buttonPin = 2;
-const int delayMS = 125;
+const int delayMS = 130;
 
 // representation of one RGB pixel
 CRGB rgbColor;
@@ -14,9 +14,11 @@ CHSV hsvColor = CHSV(0, 255, 255);
 
 Thread buttonThread = Thread();
 
-int buttonState = 0;
-int prevButtonState = 0;
-bool lightOn = true;
+int buttonState = 1;
+int prevButtonState = 1;
+int numPressesHeld = 0;
+bool lightOn = false;
+bool cycleColor = true;
 
 
 void setColorRgb(unsigned int red, unsigned int green, unsigned int blue) {
@@ -26,46 +28,53 @@ void setColorRgb(unsigned int red, unsigned int green, unsigned int blue) {
 }
 
 void readButton() {
+  // 0 when pressed, 1 when depressed
   buttonState = digitalRead(buttonPin);
-  if (buttonState != prevButtonState) {
-    // button was pressed or released
-    if (buttonState == 1 && prevButtonState == 0) {
-      // invert the lightOn bool every time the button is pressed, not depressed
-      lightOn = !lightOn;
-      if (!lightOn) {
-        setColorRgb(0, 0, 0);
+  
+  if (buttonState == 0) {
+    if (prevButtonState == 1) {
+       // button pressed
+       numPressesHeld = numPressesHeld + 1;
+    }
+    if (prevButtonState == 0) {
+      // button left pressed
+      if (numPressesHeld == 10) {
+        lightOn = !lightOn;
+        if (!lightOn) {
+          setColorRgb(0, 0, 0);
+        }
       }
+      numPressesHeld = numPressesHeld + 1;
     }
   }
-  prevButtonState = buttonState;
-}
-
-void fullValueCycle(bool invert) {
-  // run the hsv pixel through value 0-255, with constant hue and saturation
-  // can choose to invert the direction to 255-0
-  for (int i = 0; i <= 255; i += 1) {
-      if (invert) {
-        hsvColor.v = 255 - i; 
+  if (buttonState == 1) {
+    if (prevButtonState == 0) {
+      // button depressed
+      if (numPressesHeld < 10) {
+        // color chosen/unchosen, toggle cycling color
+        cycleColor = !cycleColor;
       }
-      else {
-        hsvColor.v = i;
-      }
-      hsv2rgb_rainbow(hsvColor, rgbColor);
-      setColorRgb(rgbColor.r, rgbColor.b, rgbColor.g);
-      delay(5);
+      numPressesHeld = 0;
     }
+    if (prevButtonState == 1) {
+      // button left depressed
+    }
+  }
+  
+  prevButtonState = buttonState;
 }
 
 void fullHueCycle() {
   // run the hsv pixel through hue 0-255, with constant value and saturation
   // no need to have an invert option as hue is defined as the angular component
   // in cylindrical coordinates, and so will return to it's originial value
-  
   for (int i = 0; i <= 255; i++) {
-    if (lightOn) {
+    if (lightOn && cycleColor) {
       hsvColor.h = i;
       hsv2rgb_rainbow(hsvColor, rgbColor);
-      setColorRgb(rgbColor.r, rgbColor.b, rgbColor.g);
+      setColorRgb(rgbColor.r, rgbColor.g, rgbColor.b);
+    } else {
+      i--;
     }
     if(buttonThread.shouldRun()){
       buttonThread.run();
@@ -74,22 +83,11 @@ void fullHueCycle() {
   } 
 }
 
-void startupSequence(int startHue, int numTimes) {
-  // pulsing effect with a single hue, make sure that this runs
-  // an odd number of times to end on the value being max
-  hsvColor.h = startHue;
-  for (int i = 0; i < numTimes; i++) {
-    bool invert = (i + 2) % 2;
-    fullValueCycle(invert); 
-  }
-}
-
 void setup() {
   pinMode(buttonPin, INPUT);
-  buttonThread.setInterval(100);
+  buttonThread.setInterval(10);
   buttonThread.onRun(readButton);
   setColorRgb(0,0,0);
-  startupSequence(0, 5);
 }
 
 void loop() {
